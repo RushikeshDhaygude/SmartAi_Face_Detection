@@ -2,60 +2,55 @@
 <html>
   <head>
     <title>Two Components, Left and Right</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='meeting_room.css') }}">
     <script>
-      var video;
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(function(stream) {
-        video = document.querySelector('video');
-        video.srcObject = stream;
-        video.onloadedmetadata = function(e) {
-          video.play();
-        };
-      })
-      .catch(function(err) {
-        console.log(err.name + ": " + err.message);
-      });
-      
+      document.addEventListener("DOMContentLoaded", function() {
+        // Get the video element
+        var video = document.getElementById('video');
 
-    function captureFrame() {
-      // alert("Hello Working");
-      var canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      var ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      
-      return canvas.toDataURL();
-    }
+        // Use getUserMedia API to access the webcam stream
+        navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+          video.srcObject = stream;
+        });
 
-    function sendFrames() {
-      
-      var frames = [];
-      for (var i = 0; i < 10; i++) { // Capture 10 frames
-        frames.push(captureFrame());
-      }
-      console.log(frames)
-      // Send the frames to the Flask endpoint
-     
-      fetch('/video_frames', {
-        method: 'POST',
-        body: frames
-      }).then(function (response) {
-        console.log("Hello");
-        // Handle the response from the server
+        // Set up a canvas element to capture frames from the video
+        var canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        var context = canvas.getContext('2d');
+
+        // Set up a timer to capture frames every 200ms (5 frames in 1 second)
+        var interval = setInterval(function() {
+          // Draw the current frame from the video to the canvas
+          context.drawImage(video, 0, 0, canvas.width, canvas.height);
+          // Get the base64-encoded data URL of the canvas image
+          var imageDataUrl = canvas.toDataURL('image/jpeg');
+          // Send the image data to the Flask backend using an AJAX request
+          $.ajax({
+            url: '/run_eye_tracking',
+            method: 'POST',
+            data: { image_data: imageDataUrl },
+            success: function(response) {
+              console.log(response);
+            }
+          });
+        }, 200);
+
+        // Stop capturing frames after 5 seconds (1000ms * 5 frames = 1000ms * 5 / 200ms = 25)
+        setTimeout(function() {
+          clearInterval(interval);
+        }, 5000);
       });
-    }
     </script>
+      
   </head>
   <body>
     <div class="container">
       <div class="left-component">
         <!-- <a href="{{ url_for('run_eye_tracking') }}">Function 1</a> -->
         <h2>Student Webcam</h2>
-        <video></video>
-        <button onclick="sendFrames()">Send Frames</button>
-
+        <video id="video"></video>
       </div>
       <div class="right-component">
         <h2>HeatMap</h2>
