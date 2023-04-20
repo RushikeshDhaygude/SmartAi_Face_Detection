@@ -9,6 +9,18 @@ body {
 	background-color: #f8f8f8;
 }
 
+.bg-image {
+	background-image: url('https://images.pexels.com/photos/4144225/pexels-photo-4144225.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+	background-size: cover;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	opacity: 0.3;
+	z-index: -1;
+}
+
 .container {
 	max-width: 500px;
 	margin: 50px auto;
@@ -35,7 +47,7 @@ label {
 	color: #555;
 }
 
-input[type="text"] {
+input[type="text"], input[type="password"] {
 	width: 100%;
 	padding: 10px;
 	border: 1px solid #ccc;
@@ -57,14 +69,17 @@ input[type="text"] {
 	background-color: #3e8e41;
 }
 
-.bg-image {
-	background-image: url('https://images.pexels.com/photos/4226256/pexels-photo-4226256.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
-	background-size: cover;
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	opacity: 0.3;
-	z-index: -1;
+.forgot-password {
+	font-size: 16px;
+	color: #777;
+	margin-top: 10px;
+}
+
+.forgot-password a {
+	color: #333;
+	text-decoration: none;
+}
+
+.forgot-password a:hover {
+	text-decoration: underline;
 }
